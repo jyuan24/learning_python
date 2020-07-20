@@ -335,3 +335,85 @@
 #     print('Name', item['name'])
 #     print('Id', item['id'])
 #     print('Attribute', item['x'])
+
+
+
+
+# # https://api.github.com/users/jyuan24
+# import urllib.request, urllib.parse, urllib.error
+# import json
+# # serviceurl = 'https://api.github.com/users/'
+# serviceurl = 'http://maps.googleapis.com/maps/api/geocode/json?'
+# while True:
+#     username = input('Enter location: ')
+#     if len(address) < 1: break
+#     url = serviceurl + urllib.parse.urlencode({'address': address}) # this will result in a 'username=jyuan24' in address...not ideal...
+#     print('Retrieving', url)
+#     uh = urllib.request.urlopen(url)
+#     data = uh.read().decode()
+#     print('Retrieved', len(data), 'characters')
+# try:
+#     js = json.loads(data)
+# except:
+#     js = None
+# if not js or 'status' not in js or js['status'] != 'OK':
+#     print('==== Failure To Retrieve ====')
+#     print(data)
+#     continue
+# print(json.dumps(js, indent=4)) # prints so json comes back with indents in console
+# lat = js['results'][0]['geometry']['location']['lat']
+# lng = js['results'][0]['geometry']['location']['lng']
+# print('lat', lat, 'lng', lng)
+# location = js['results'][0]['formatted_address']
+# print(location)
+
+
+
+
+# the following is for twitter api and is ideally split between multiple files.
+# hidden.py # this file contains the oauth key
+def oauth():
+    return {"consumer_key": "something here",
+            "consumer_secret": "secret here",
+            "token_key": "key here",
+            "token_secret": "secret here"}
+
+# twtest.py
+import urllib.request, urllib.parse, urllib.error
+from twurl import augment
+import ssl
+
+print('* Calling Twitter...')
+url = augment('https://api.twitter.com/1.1/statuses/user_timeline.json', {'screen_name': 'drchuck', 'count': '2'}) # this is from twitter documentation to get user timeline info
+print(url)
+
+ctx = ssl.create_default_context()
+ctx.check_hostname = False
+ctx.verify_mode = ssl.CERT_NONE
+
+connection = urllib.request.urlopen(url, context=ctx)
+data = connection.read()
+print(data)
+
+# twitter1.py
+import urllib.request, urllib.parse, urllib.error
+import twurl
+import ssl
+
+TWITTER_URL = 'https://api.twitter.com/1.1/statuses/user_timeline.json'
+
+ctx = ssl.create_default_context()
+ctx.check_hostname = False
+ctx.verify_mode = ssl.CERT_NONE
+
+while True:
+    print('')
+    acct = input('Enter Twitter Account:')
+    if (len(acct) < 1): break
+    url = twurl.augment(TWITTER_URL, {'screen_name': acct, 'count': '2'})
+    print('Retrieving', url)
+    connection = urllib.request.urlopen(url, context=ctx)
+    data = connection.read().decode()
+    pritn(data[:250])
+    headers = dict(connection.getheaders())
+    pritn('Remaining', headers['x-rate-limit-remaining'])
