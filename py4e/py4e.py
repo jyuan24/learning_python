@@ -498,40 +498,106 @@
 
 
 
-# emaildb.py
-import sqlite3
+# # emaildb.py
+# import sqlite3
 
-conn = sqlite3.connect('emaildb.sqlite') # checks the connection to the file, since file doesn't exist, it will create this file when it runs
-cur = conn.cursor() # kinda like the handle...to read the file..SQL commands are sent through this cursor, and response is accepted through this cursor
+# conn = sqlite3.connect('emaildb.sqlite') # checks the connection to the file, since file doesn't exist, it will create this file when it runs
+# cur = conn.cursor() # kinda like the handle...to read the file..SQL commands are sent through this cursor, and response is accepted through this cursor
 
-cur.execute('DROP TABLE IF EXISTS Counts') # drops emaildb table if exists, do nothing otherweise
+# cur.execute('DROP TABLE IF EXISTS Counts') # drops emaildb table if exists, do nothing otherweise
 
-cur.execute('''
-CREATE TABLE Counts (email TEXT, count INTEGER)''')
-# goal below is to loop through a file like before, then for each email it finds, check if email exists, and update if it does
-fname = input('Enter file name: ')
-if (len(fname) < 1): fname = 'mbox-short.txt'
-fh = open(fname)
-for line in fh:
-    if not line.startswith('From: '): continue
-    pieces = line.split()
-    email = pieces[1]
-    cur.execute('SELECT count FROM Counts WHERE email = ?', (email,)) # email, so it is a tuple...weird python syntax thing. we want tuple here instead of just email. this line is not retrieving the data, but it is verifying table name, syntax is right, and is opening a record set.
-    row = cur.fetchone() # grab first one which matches above criteria of matching email, return it as row
-    if row is None: # if no records that meet this criteria
-        cur.execute('''INSERT INTO Counts (email, count)
-                VALUES (?, 1)''', (email,)) # set count to 1 because None
-    else:
-        cur.execute('UPDATE Counts SET count = count + 1 WHERE email = ?', (email,)) # updating instead of adding...just better for databases
-    conn.commit() # in this code it's committing every loop, but it can run every 10 loops or whatever
+# cur.execute('''
+# CREATE TABLE Counts (email TEXT, count INTEGER)''')
+# # goal below is to loop through a file like before, then for each email it finds, check if email exists, and update if it does
+# fname = input('Enter file name: ')
+# if (len(fname) < 1): fname = 'mbox-short.txt'
+# fh = open(fname)
+# for line in fh:
+#     if not line.startswith('From: '): continue
+#     pieces = line.split()
+#     email = pieces[1]
+#     cur.execute('SELECT count FROM Counts WHERE email = ?', (email,)) # email, so it is a tuple...weird python syntax thing. we want tuple here instead of just email. this line is not retrieving the data, but it is verifying table name, syntax is right, and is opening a record set.
+#     row = cur.fetchone() # grab first one which matches above criteria of matching email, return it as row
+#     if row is None: # if no records that meet this criteria
+#         cur.execute('''INSERT INTO Counts (email, count)
+#                 VALUES (?, 1)''', (email,)) # set count to 1 because None
+#     else:
+#         cur.execute('UPDATE Counts SET count = count + 1 WHERE email = ?', (email,)) # updating instead of adding...just better for databases
+#     conn.commit() # in this code it's committing every loop, but it can run every 10 loops or whatever
 
-# https://www.sqlite.org/lang_select.html
-sqlstr = 'SELECT email, count FROM Counts ORDER BY count DESC LIMIT 10' # pulling data from db
+# # https://www.sqlite.org/lang_select.html
+# sqlstr = 'SELECT email, count FROM Counts ORDER BY count DESC LIMIT 10' # pulling data from db
 
-for row in cur.execute(sqlstr): # execute, pritn each row which is a tuple, which is why row[0] etc
-    print(str(row[0]), row[1])
+# for row in cur.execute(sqlstr): # execute, pritn each row which is a tuple, which is why row[0] etc
+#     print(str(row[0]), row[1])
 
-cur.close()
+# cur.close()
+
+
+
+# # twspider.py
+# from urllib.request import urlopen
+# import urllib.error
+# import twurl
+# import json
+# import sqlite3
+# import ssl
+
+# TWITTER_URL = 'https://api.twitter.com/1.1/friends/list.json'
+
+# conn = sqlite3.connect('spider.sqlite')
+# cur = conn.cursor()
+
+# cur.execute('''
+#             CREATE TABLE IF NOT EXISTS Twitter
+#             (name TEXT, retrived INTEGER, friends INTEGER)''')
+
+# ctx = ssl.create_default_context()
+# ctx.check_hostname = False
+# ctx.verify_mode = ssl.CERT_NONE
+
+# while True:
+#     acct = input('Enter a Twitter account, or quit: ')
+#     if (acct == 'quit'): break
+#     if (len(acct) < 1):
+#         cur.execute('SELECT name FROM Twitter WHERE retrieved = 0 LIMIT 1')
+#         try:
+#             acct = cur.fetchone()[0]
+#         except:
+#             print('No unretrieved Twitter accounts found')
+#             continue
+
+#     url = twurl.augment(TWITTER_URL, {'screen_name': acct, 'count': '5'})
+#     print('Retrieving', url)
+#     connection = urlopen(url, context=ctx)
+#     data = connection.read().decode()
+#     headers = dict(connection.getheaders())
+
+#     print('Remaining', headers['x-rate-limit-remaining'])
+#     js = json.loads(data)
+
+#     cur.execute('UPDATE Twitter SET retrieved=1 WHERE name = ?', (acct, ))
+
+#     countnew = 0
+#     countold = 0
+#     for u in js['users']:
+#         friend = u['screen_name']
+#         print(friend)
+#         cur.execute('SELECT friends FROM Twitter WHERE name = ? LIMIT 1', (friend, ))
+#         try:
+#             count = cur.fetchone()[0]
+#             cur.execute('UPDATE Twitter SET friends = ? WHERE name = ?', (count+1, friend))
+#             countold += 1
+#         except:
+#             cur.execute('''INSERT INTO Twitter (name, retrieved, friends)
+#                             VALUES (?, 0, 1)''', (friend, ))
+#             countnew += 1
+#     print('New accounts=', countnew, ' revisted=', countold)
+#     conn.commit()
+# cur.close()
+
+
+
 
 
 
