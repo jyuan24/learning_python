@@ -370,50 +370,320 @@
 
 
 
-# the following is for twitter api and is ideally split between multiple files.
-# hidden.py # this file contains the oauth key
-def oauth():
-    return {"consumer_key": "something here",
-            "consumer_secret": "secret here",
-            "token_key": "key here",
-            "token_secret": "secret here"}
+# # the following is for twitter api and is ideally split between multiple files.
+# # hidden.py # this file contains the oauth key
+# def oauth():
+#     return {"consumer_key": "something here",
+#             "consumer_secret": "secret here",
+#             "token_key": "key here",
+#             "token_secret": "secret here"}
 
-# twtest.py
-import urllib.request, urllib.parse, urllib.error
-from twurl import augment
-import ssl
+# # twtest.py
+# import urllib.request, urllib.parse, urllib.error
+# from twurl import augment
+# import ssl
 
-print('* Calling Twitter...')
-url = augment('https://api.twitter.com/1.1/statuses/user_timeline.json', {'screen_name': 'drchuck', 'count': '2'}) # this is from twitter documentation to get user timeline info
-print(url)
+# print('* Calling Twitter...')
+# url = augment('https://api.twitter.com/1.1/statuses/user_timeline.json', {'screen_name': 'drchuck', 'count': '2'}) # this is from twitter documentation to get user timeline info
+# print(url)
 
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+# ctx = ssl.create_default_context()
+# ctx.check_hostname = False
+# ctx.verify_mode = ssl.CERT_NONE
 
-connection = urllib.request.urlopen(url, context=ctx)
-data = connection.read()
-print(data)
+# connection = urllib.request.urlopen(url, context=ctx)
+# data = connection.read()
+# print(data)
 
-# twitter1.py
-import urllib.request, urllib.parse, urllib.error
-import twurl
-import ssl
+# # twitter1.py
+# import urllib.request, urllib.parse, urllib.error
+# import twurl
+# import ssl
 
-TWITTER_URL = 'https://api.twitter.com/1.1/statuses/user_timeline.json'
+# TWITTER_URL = 'https://api.twitter.com/1.1/statuses/user_timeline.json'
 
-ctx = ssl.create_default_context()
-ctx.check_hostname = False
-ctx.verify_mode = ssl.CERT_NONE
+# ctx = ssl.create_default_context()
+# ctx.check_hostname = False
+# ctx.verify_mode = ssl.CERT_NONE
 
-while True:
-    print('')
-    acct = input('Enter Twitter Account:')
-    if (len(acct) < 1): break
-    url = twurl.augment(TWITTER_URL, {'screen_name': acct, 'count': '2'})
-    print('Retrieving', url)
-    connection = urllib.request.urlopen(url, context=ctx)
-    data = connection.read().decode()
-    pritn(data[:250])
-    headers = dict(connection.getheaders())
-    pritn('Remaining', headers['x-rate-limit-remaining'])
+# while True:
+#     print('')
+#     acct = input('Enter Twitter Account:')
+#     if (len(acct) < 1): break
+#     url = twurl.augment(TWITTER_URL, {'screen_name': acct, 'count': '2'})
+#     print('Retrieving', url)
+#     connection = urllib.request.urlopen(url, context=ctx)
+#     data = connection.read().decode()
+#     pritn(data[:250])
+#     headers = dict(connection.getheaders())
+#     pritn('Remaining', headers['x-rate-limit-remaining'])
+
+
+
+
+# class PartyAnimal:
+#     x=0
+
+#     def __init__(self): # this is the constructor
+#         print('I am constructed')
+
+#     def party(self):
+#         self.x += 1
+#         print("So far", self.x)
+
+#     def __del__(self): # destructor
+#         print('I am destructed', self.x)
+    
+# an = PartyAnimal() # this is constructing the instance, and triggers the __init__ print
+# an.party()
+# an.party()
+# an.party()
+# an = 42 # overwriting an for now, which will trigger the __del__ print
+# # print(type(an))
+# # print(dir(an))
+
+
+
+# class PartyAnimal:
+#     x=0
+#     name = ""
+
+#     def __init__(self, z): # z is a parameter to pass in, in this case sally and jim
+#         self.name = z
+#         print(self.name, "constructed")
+
+#     def party(self):
+#         self.x += 1
+#         print(self.name, "party count", self.x)
+
+# s = PartyAnimal("Sally")
+# s.party()
+# j = PartyAnimal("Jim")
+# j.party()
+# s.party()
+
+
+# class PartyAnimal:
+#     x=0
+#     name = ""
+#     def __init__(self, nam):
+#         self.name = nam
+#         print(self.name, "constructed")
+
+#     def party(self):
+#         self.x += 1
+#         print(self.name, "party count", self.x)
+        
+# class FootballFan(PartyAnimal): # this creates the child inheritance 
+#     points = 0
+#     def touchdown(self):
+#         self.points += 7
+#         self.party()
+#         print(self.name, "points", self.points)
+
+# s = PartyAnimal('Sally')
+# s.party()
+# j = FootballFan('Jim')
+# j.party()
+# j.touchdown()
+
+
+# simple definitions:
+# Class       -   a template
+# Attribute   -   a variable within a class
+# Method      -   a function within a class
+# Object      -   a particular instance of a class
+# Constructor -   code that runs when an object is created
+# Inheritance -   the ability to extend a class to make a new class
+
+
+
+# # emaildb.py
+# import sqlite3
+
+# conn = sqlite3.connect('emaildb.sqlite') # checks the connection to the file, since file doesn't exist, it will create this file when it runs
+# cur = conn.cursor() # kinda like the handle...to read the file..SQL commands are sent through this cursor, and response is accepted through this cursor
+
+# cur.execute('DROP TABLE IF EXISTS Counts') # drops emaildb table if exists, do nothing otherweise
+
+# cur.execute('''
+# CREATE TABLE Counts (email TEXT, count INTEGER)''')
+# # goal below is to loop through a file like before, then for each email it finds, check if email exists, and update if it does
+# fname = input('Enter file name: ')
+# if (len(fname) < 1): fname = 'mbox-short.txt'
+# fh = open(fname)
+# for line in fh:
+#     if not line.startswith('From: '): continue
+#     pieces = line.split()
+#     email = pieces[1]
+#     cur.execute('SELECT count FROM Counts WHERE email = ?', (email,)) # email, so it is a tuple...weird python syntax thing. we want tuple here instead of just email. this line is not retrieving the data, but it is verifying table name, syntax is right, and is opening a record set.
+#     row = cur.fetchone() # grab first one which matches above criteria of matching email, return it as row
+#     if row is None: # if no records that meet this criteria
+#         cur.execute('''INSERT INTO Counts (email, count)
+#                 VALUES (?, 1)''', (email,)) # set count to 1 because None
+#     else:
+#         cur.execute('UPDATE Counts SET count = count + 1 WHERE email = ?', (email,)) # updating instead of adding...just better for databases
+#     conn.commit() # in this code it's committing every loop, but it can run every 10 loops or whatever
+
+# # https://www.sqlite.org/lang_select.html
+# sqlstr = 'SELECT email, count FROM Counts ORDER BY count DESC LIMIT 10' # pulling data from db
+
+# for row in cur.execute(sqlstr): # execute, pritn each row which is a tuple, which is why row[0] etc
+#     print(str(row[0]), row[1])
+
+# cur.close()
+
+
+
+# # twspider.py
+# from urllib.request import urlopen
+# import urllib.error
+# import twurl
+# import json
+# import sqlite3
+# import ssl
+
+# TWITTER_URL = 'https://api.twitter.com/1.1/friends/list.json'
+
+# conn = sqlite3.connect('spider.sqlite')
+# cur = conn.cursor()
+
+# cur.execute('''
+#             CREATE TABLE IF NOT EXISTS Twitter
+#             (name TEXT, retrived INTEGER, friends INTEGER)''')
+
+# ctx = ssl.create_default_context()
+# ctx.check_hostname = False
+# ctx.verify_mode = ssl.CERT_NONE
+
+# while True:
+#     acct = input('Enter a Twitter account, or quit: ')
+#     if (acct == 'quit'): break
+#     if (len(acct) < 1):
+#         cur.execute('SELECT name FROM Twitter WHERE retrieved = 0 LIMIT 1')
+#         try:
+#             acct = cur.fetchone()[0]
+#         except:
+#             print('No unretrieved Twitter accounts found')
+#             continue
+
+#     url = twurl.augment(TWITTER_URL, {'screen_name': acct, 'count': '5'})
+#     print('Retrieving', url)
+#     connection = urlopen(url, context=ctx)
+#     data = connection.read().decode()
+#     headers = dict(connection.getheaders())
+
+#     print('Remaining', headers['x-rate-limit-remaining'])
+#     js = json.loads(data)
+
+#     cur.execute('UPDATE Twitter SET retrieved=1 WHERE name = ?', (acct, ))
+
+#     countnew = 0
+#     countold = 0
+#     for u in js['users']:
+#         friend = u['screen_name']
+#         print(friend)
+#         cur.execute('SELECT friends FROM Twitter WHERE name = ? LIMIT 1', (friend, ))
+#         try:
+#             count = cur.fetchone()[0]
+#             cur.execute('UPDATE Twitter SET friends = ? WHERE name = ?', (count+1, friend))
+#             countold += 1
+#         except:
+#             cur.execute('''INSERT INTO Twitter (name, retrieved, friends)
+#                             VALUES (?, 0, 1)''', (friend, ))
+#             countnew += 1
+#     print('New accounts=', countnew, ' revisted=', countold)
+#     conn.commit()
+# cur.close()
+
+
+
+
+# # tracks.py
+# import xml.etree.ElementTree as ET # reads xml
+# import sqlite3 # reads sqlite db
+
+# conn = sqlite3.connect('trackdb.sqlite') # creates db if doesn't already exist
+# cur = conn.cursor()
+
+# # Make some fresh tables using executescript()
+# cur.executescript('''
+# DROP TABLE IF EXISTS Artist;
+# DROP TABLE IF EXISTS Album;
+# DROP TABLE IF EXISTS Track;
+
+# CREATE TABLE Artist (
+#     id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+#     name    TEXT UNIQUE
+# );
+
+# CREATE TABLE Album (
+#     id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+#     artist_id  INTEGER,
+#     title   TEXT UNIQUE
+# );
+
+# CREATE TABLE Track (
+#     id  INTEGER NOT NULL PRIMARY KEY 
+#         AUTOINCREMENT UNIQUE,
+#     title TEXT  UNIQUE,
+#     album_id  INTEGER,
+#     len INTEGER, rating INTEGER, count INTEGER
+# );
+# ''') # create these tables fresh if they dne
+
+
+# fname = input('Enter file name: ')
+# if ( len(fname) < 1 ) : fname = 'Library.xml' # apples xml...as mentioned would be a lot better in json
+
+# # <key>Track ID</key><integer>369</integer>
+# # <key>Name</key><string>Another One Bites The Dust</string>
+# # <key>Artist</key><string>Queen</string>
+# def lookup(d, key): # key is second due to how this xml was designed
+#     found = False
+#     for child in d:
+#         if found : return child.text
+#         if child.tag == 'key' and child.text == key :
+#             found = True
+#     return None
+
+# stuff = ET.parse(fname)
+# all = stuff.findall('dict/dict/dict') # goes down to 3rd level of dict which contains track info
+# print('Dict count:', len(all))
+# for entry in all:
+#     if ( lookup(entry, 'Track ID') is None ) : continue
+
+#     name = lookup(entry, 'Name')
+#     artist = lookup(entry, 'Artist')
+#     album = lookup(entry, 'Album')
+#     count = lookup(entry, 'Play Count')
+#     rating = lookup(entry, 'Rating')
+#     length = lookup(entry, 'Total Time')
+
+#     if name is None or artist is None or album is None : 
+#         continue
+
+#     print(name, artist, album, count, rating, length)
+
+#     cur.execute('''INSERT OR IGNORE INTO Artist (name) 
+#         VALUES ( ? )''', ( artist, ) ) # because artist name is unique, it will blow up if inserting duplicate artist name, therefore insert or ignore
+#     cur.execute('SELECT id FROM Artist WHERE name = ? ', (artist, )) # select above artist id
+#     artist_id = cur.fetchone()[0]
+
+#     cur.execute('''INSERT OR IGNORE INTO Album (title, artist_id) 
+#         VALUES ( ?, ? )''', ( album, artist_id ) )
+#     cur.execute('SELECT id FROM Album WHERE title = ? ', (album, ))
+#     album_id = cur.fetchone()[0]
+
+#     cur.execute('''INSERT OR REPLACE INTO Track
+#         (title, album_id, len, rating, count) 
+#         VALUES ( ?, ?, ?, ?, ? )''', # similar to above, except this replaces instead of ignores
+#         ( name, album_id, length, rating, count ) )
+
+#     conn.commit()
+
+
+
+
+
+
